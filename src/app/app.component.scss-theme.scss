@@ -1,0 +1,24 @@
+@use 'sass:map';
+@use '~@angular/material' as mat;
+
+@mixin app-theme($theme) {
+  // Get the color config from the theme.
+  $color-config: mat.get-color-config($theme);
+
+  // Get the primary color palette from the color-config.
+  $primary-palette: map.get($color-config, 'primary');
+  $accent-palette: map.get($color-config, 'accent');
+
+  .list-item-num {
+    background-color: mat.get-color-from-palette($accent-palette);
+  }
+}
+
+@mixin typography($theme) {
+  // Get the typography config from the theme.
+  $typography-config: mat.get-typography-config($theme);
+
+  .my-carousel {
+    font-family: mat.font-family($typography-config);
+  }
+}

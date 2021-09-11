@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+@use '~@angular/material' as mat;
+@use './app/app.component.scss-theme.scss' as app;
+
+
+@include mat.core();
+
+$primary: mat.define-palette(mat.$purple-palette);
+$accent:  mat.define-palette(mat.$green-palette, A200, A100, A400);
+
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+  )
+));
+
+@include app.app-theme($theme);
+@include mat.all-component-themes($theme);
+
+html, body { height: 100%; background-color: mat.get-color-from-palette($primary, 800); }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

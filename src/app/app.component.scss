@@ -1,0 +1,133 @@
+div {
+    padding: 0;
+    margin: 0;
+}
+
+.file-input {
+    display: none;
+}
+
+svg {
+    height: 500px;
+    width: 500px;
+}
+
+:host {
+    height: 100vh;
+    display: block;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.div-card {
+    width: 600px;
+    height: min-content;
+    margin: auto 0 auto 0;
+    text-align: center;
+}
+
+.card-buttons {
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+    width: 100%;
+    margin: 0 !important;
+}
+
+.card-buttons button {
+    width: 45%;
+    text-align: center;
+    margin: 0 !important;
+    padding: 0;
+}
+
+.input-field {
+    width: 100%;
+}
+
+.card-content {
+    margin: 0;
+}
+
+form {
+    padding: 0;
+    margin: 0;
+}
+
+.upload-btn {
+    margin-left: 10px;
+}
+
+.card-title {
+    font-size: 3em;
+    line-height: normal;
+    margin: 20px auto 20px auto !important;
+}
+
+.card-content p {
+    font-size: 1.6em;
+    margin: 10px;
+}
+
+.list-item-num {
+    border-radius: 50%;
+    width: 1.2em;
+    height: 1.2em;
+    box-shadow: 0 1.5px 4px 0 rgba(0, 0, 0, 0.2), 0 2px 6px 0 rgba(0, 0, 0, 0.19);
+    margin-right: 10px;
+}
+
+.mat-list-app {
+    width: 80%;
+    margin: 0 auto;
+    padding-bottom: 20px;
+}
+
+.command-box {
+    width: 550px;
+    height: 300px;
+    margin: 20px auto;
+    overflow: scroll;
+    text-align: left;
+    background-color: #444444;
+    padding: 10px;
+}
+
+.command-box p {
+    display: inline-block;
+    margin: 0;
+    font-size: 1em;
+    padding-right: 10px;
+    color: #999999
+}
+
+.svg-container {
+    margin: 20px auto;
+}
+
+table {
+    width: 100%;
+    text-align: left;
+  }
+
+  .checkbox {
+      margin: 10px 12px;
+  }
+
+.tool-input {
+    display: inline-block;
+    width: 20%;
+}
+
+.options-cont {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
