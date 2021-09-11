@@ -5,8 +5,8 @@
 
 @include mat.core();
 
-$primary: mat.define-palette(mat.$purple-palette);
-$accent:  mat.define-palette(mat.$green-palette, A200, A100, A400);
+$primary: mat.define-palette(mat.$blue-gray-palette);
+$accent:  mat.define-palette(mat.$orange-palette, A200, A100, A400);
 
 $theme: mat.define-light-theme((
   color: (
@@ -18,5 +18,5 @@ $theme: mat.define-light-theme((
 @include app.app-theme($theme);
 @include mat.all-component-themes($theme);
 
-html, body { height: 100%; background-color: mat.get-color-from-palette($primary, 800); }
+html, body { height: 100%; background-color: mat.get-color-from-palette($primary, 700); }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
