@@ -49,6 +49,8 @@ export class AppComponent implements AfterViewInit {
 
     if (file) {
       this.fileName = file.name;
+      let regMatch = this.fileName.match(/\./g);
+      this.fileName = this.fileName.substring(0,this.fileName.indexOf(regMatch[0]));
       let fileReader: FileReader = new FileReader();
       let self = this;
       fileReader.onloadend = function (x) {

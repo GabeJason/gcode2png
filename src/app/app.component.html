@@ -26,8 +26,8 @@
           <mat-checkbox class="checkbox" (change)="invertXChecked($event.checked)">Invert X</mat-checkbox>
           <mat-checkbox class="checkbox">Remove Duplicates</mat-checkbox>
           <mat-form-field appearance="outline" class="tool-input">
-            <mat-label>Tool Diameter</mat-label>
-            <input name="toolDiam" type="number" step="0.0005" (change)="updateTool()" [(ngModel)]="toolDiam" matInput placeholder="Tool Diameter">
+            <mat-label>Tool Diameter (inches)</mat-label>
+            <input name="toolDiam" type="number" step="0.0005" (change)="updateTool()" [(ngModel)]="toolDiam" matInput placeholder="Tool Diameter (inches)">
           </mat-form-field>
       </div>
       <div [hidden]="!loading">
