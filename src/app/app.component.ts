@@ -142,7 +142,7 @@ export class AppComponent implements AfterViewInit {
 
         if (x != -1) {
 
-          let command: Command = { line: i, com: gCom, x: x, y: y, i: io, j: j };
+          let command: Command = { line: (i+1), com: gCom, x: x, y: y, i: io, j: j };
 
           //console.log("Line " + i + " " + fileLine + " : " + gCom + " X" + x + " Y" + y + " I" + io + " J" + j);
           this.gCommands.push(command);
