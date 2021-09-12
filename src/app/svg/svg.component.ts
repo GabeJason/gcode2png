@@ -1,5 +1,6 @@
 import { Component, Input, AfterViewInit, ViewChild, ElementRef, Renderer2, SimpleChanges, SimpleChange } from '@angular/core';
 import * as svg from 'save-svg-as-png';
+import { SvgOption } from '../_models/svgOption';
 
 @Component({
   selector: 'app-svg',
@@ -7,17 +8,15 @@ import * as svg from 'save-svg-as-png';
   styleUrls: ['./svg.component.scss']
 })
 export class SvgComponent implements AfterViewInit {
-  @Input() path: string;
-  @Input() height: string;
-  @Input() fileName: string;
+  @Input() option: SvgOption;
   @Input() resetFunc: () => void;
-  @ViewChild('el') div:ElementRef;
+  @ViewChild('el') div: ElementRef;
 
   svg: any;
 
   pathEl: any;
 
-  constructor(private render: Renderer2,private host: ElementRef) { }
+  constructor(private render: Renderer2, private host: ElementRef) { }
 
   ngAfterViewInit(): void {
     this.buildSvg();
@@ -27,30 +26,52 @@ export class SvgComponent implements AfterViewInit {
     this.render.appendChild(this.div.nativeElement, this.svg);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    const currentItem: SimpleChange = changes.item;
+  updateSvg() {
     if (this.pathEl) {
-      this.render.setAttribute(this.pathEl, "d", this.path);
+      this.setSvgPath();
+      this.setFill();
+      this.setStroke();
     }
   }
 
   buildSvg() {
+    this.svg = this.render.createElement("svg", "http://www.w3.org/2000/svg");
+    this.pathEl = this.render.createElement("path", "http://www.w3.org/2000/svg");
+    this.render.setAttribute(this.pathEl, "stroke-linecap", "round");
+    this.render.setAttribute(this.pathEl, "stroke-linejoin", "round");
+    this.render.setAttribute(this.pathEl, "fill-rule", "evenodd");
+    this.setSvgPath();
+    this.setFill();
+    this.setStroke();
+    this.render.appendChild(this.svg, this.pathEl);
+  }
 
-    this.svg = this.render.createElement("svg","http://www.w3.org/2000/svg");
-    this.render.setAttribute(this.svg,"width","550px");
-    this.render.setAttribute(this.svg,"height",this.height+"px");
+  setSvgPath() {
+    this.render.setAttribute(this.svg, "width", "550px");
+    this.render.setAttribute(this.svg, "height", this.option.height.toString() + "px");
+    this.render.setAttribute(this.pathEl, "d", this.option.path);
+  }
 
-    this.pathEl = this.render.createElement("path","http://www.w3.org/2000/svg");
-    this.render.setAttribute(this.pathEl, "d", this.path);
-    this.render.setAttribute(this.pathEl, "stroke", "black");
-    this.render.setAttribute(this.pathEl, "stroke-width", "3");
-    this.render.setAttribute(this.pathEl, "fill", "none");
-    this.render.appendChild(this.svg,this.pathEl);
+  setFill() {
+    if (this.option.fill) {
+      this.render.setAttribute(this.pathEl, "fill", this.option.fillColor);
+    } else {
+      this.render.setAttribute(this.pathEl, "fill", "none");
+    }
+  }
 
+  setStroke() {
+    if (this.option.stroke) {
+      this.render.setAttribute(this.pathEl, "stroke", this.option.strokeColor);
+      this.render.setAttribute(this.pathEl, "stroke-width", this.option.strokeWidth.toFixed(6));
+    } else {
+      this.render.setAttribute(this.pathEl, "stroke", "white");
+      this.render.setAttribute(this.pathEl, "stroke-width", this.option.strokeWidth.toFixed(6));
+    }
   }
 
   downloadSvg() {
-    svg.saveSvgAsPng(this.div.nativeElement.querySelector("svg"), this.fileName+"-g2p.png");
+    svg.saveSvgAsPng(this.div.nativeElement.querySelector("svg"), this.option.fileName + "-g2p.png");
   }
 
   reset() {

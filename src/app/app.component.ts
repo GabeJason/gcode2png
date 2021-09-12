@@ -3,7 +3,9 @@ import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { roundPathCorners } from './rounding.js';
+import { SvgComponent } from './svg/svg.component';
 import { Command } from './_models/command';
+import { SvgOption } from './_models/svgOption';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +15,7 @@ import { Command } from './_models/command';
 export class AppComponent implements AfterViewInit {
   @Input() requiredFileType: string;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(SvgComponent) svgComp: SvgComponent;
 
   displayedColumns: string[] = ['line', 'command', 'x', 'y', 'i', 'j'];
 
@@ -20,7 +23,6 @@ export class AppComponent implements AfterViewInit {
 
   gCommands: Command[] = [];
   commandList = new MatTableDataSource<Command>(this.gCommands);
-  path: string;
   bigX = 0;
   bigY = 0;
 
@@ -28,7 +30,6 @@ export class AppComponent implements AfterViewInit {
   invertX = false;
   duplicates = false;
 
-  fileName: string;
   svgScale: number;
   svgScaleDisplay: string;
   svgReady = false;
@@ -36,6 +37,19 @@ export class AppComponent implements AfterViewInit {
   toolDiam = 0.0625;
 
   loading = false;
+
+  firstLoad = false;
+
+  svgOption: SvgOption = {
+    path: '', 
+    height: 0, 
+    fileName: '', 
+    fill: false, 
+    fillColor: "#000000",
+    stroke: true,
+    strokeWidth: 1,
+    strokeColor: "#000000"
+  }
 
   constructor(private http: HttpClient) { }
 
@@ -48,9 +62,9 @@ export class AppComponent implements AfterViewInit {
     const file: File = event.target.files[0];
 
     if (file) {
-      this.fileName = file.name;
-      let regMatch = this.fileName.match(/\./g);
-      this.fileName = this.fileName.substring(0,this.fileName.indexOf(regMatch[0]));
+      let fileName = file.name;
+      let regMatch = fileName.match(/\./g);
+      this.svgOption.fileName = fileName.substring(0,fileName.indexOf(regMatch[0]));
       let fileReader: FileReader = new FileReader();
       let self = this;
       fileReader.onloadend = function (x) {
@@ -154,7 +168,7 @@ export class AppComponent implements AfterViewInit {
 
     if (this.gCommands.length > 0) {
 
-      this.path = '';
+      this.svgOption.path = '';
 
       if (this.duplicates) {
         this.removeDuplicates();
@@ -173,8 +187,8 @@ export class AppComponent implements AfterViewInit {
 
       this.bigX = this.bigX - smallXDiff;
 
-      if (this.bigX != 530) {
-        this.svgScale = 530 / this.bigX;
+      if ((this.bigX + this.toolDiam) != 530) {
+        this.svgScale = 530 / (this.bigX + this.toolDiam);
       }
 
       if (this.svgScale != 1) {
@@ -216,29 +230,38 @@ export class AppComponent implements AfterViewInit {
         this.gCommandsInvertX();
       }
 
+      this.svgOption.height = this.bigY;
+
       this.commandList = new MatTableDataSource<Command>(this.gCommands);
       this.commandList.paginator = this.paginator;
 
       this.gCommands.forEach(command => {
         if (command.com == "G0") {
-          this.path = this.path + " M " + command.x.toFixed(6) + ' ' + command.y.toFixed(6);
+          this.svgOption.path = this.svgOption.path + " M " + command.x.toFixed(6) + ' ' + command.y.toFixed(6);
         }
         if (command.com == "G1") {
-          this.path = this.path + " L " + command.x.toFixed(6) + ' ' + command.y.toFixed(6);
+          this.svgOption.path = this.svgOption.path + " L " + command.x.toFixed(6) + ' ' + command.y.toFixed(6);
         }
         if (command.com == "G2" || command.com == "G3") {
-          this.path = this.path + " Q " + (command.x + command.i).toFixed(6) + ' ' + (command.y + command.j).toFixed(6) + " " + command.x.toFixed(6) + ' ' + command.y.toFixed(6);
+          this.svgOption.path = this.svgOption.path + " Q " + (command.x + command.i).toFixed(6) + ' ' + (command.y + command.j).toFixed(6) + " " + command.x.toFixed(6) + ' ' + command.y.toFixed(6);
         }
       });
 
-      this.path = this.path + " Z";
+      this.svgOption.path = this.svgOption.path + " Z";
 
       let radius = (this.toolDiam > 0 ? this.toolDiam : 0.0001) * this.svgScale;
 
-      this.path = roundPathCorners(this.path, radius, false)
+      this.svgOption.strokeWidth = radius;
+
+      this.svgOption.path = roundPathCorners(this.svgOption.path, radius, false);
+
+      if(this.firstLoad) {
+        this.svgComp.updateSvg();
+      }
 
       this.svgReady = true;
       this.loading = false;
+      this.firstLoad = true;
 
     } else {
       alert("Failed to process file.");
@@ -261,23 +284,32 @@ export class AppComponent implements AfterViewInit {
   }
 
   invertYChecked(checked: boolean) {
-    this.invertY = checked;
     if (this.fileContent.length > 0) {
       this.commandBuilder();
     }
   }
 
   invertXChecked(checked: boolean) {
-    this.invertX = checked;
     if (this.fileContent.length > 0) {
       this.commandBuilder();
     }
   }
 
   duplicateChecked(checked: boolean) {
-    this.duplicates = checked;
     if (this.fileContent.length > 0) {
       this.commandBuilder();
+    }
+  }
+
+  strokeChecked(checked: boolean) {
+    if (this.fileContent.length > 0) {
+      this.svgComp.updateSvg();
+    }
+  }
+
+  fillChecked(checked: boolean) {
+    if (this.fileContent.length > 0) {
+      this.svgComp.updateSvg();
     }
   }
 
@@ -285,6 +317,33 @@ export class AppComponent implements AfterViewInit {
     if (this.fileContent.length > 0) {
       this.commandBuilder();
     }
+  }
+
+  strokeColorUpdate() {
+    this.svgOption.strokeColor = this.colorFormat(this.svgOption.strokeColor);
+    if (this.fileContent.length > 0) {
+      this.svgComp.updateSvg();
+    }
+  }
+
+  fillColorUpdate() {
+    this.svgOption.fillColor = this.colorFormat(this.svgOption.fillColor);
+    if (this.fileContent.length > 0) {
+      this.svgComp.updateSvg();
+    }
+  }
+
+  colorFormat(color: string) {
+    color = color.replace(/[^a-fA-f0-9]/g,"");
+    if (color.length > 6) {
+      color = color.substr(0,6);
+    } else {
+      let size = 6 - color.length;
+      for (let i = 0; i < size; i++) {
+        color = color + "0";
+      }
+    }
+    return "#" + color.toUpperCase();
   }
 
   gCommandsInvertY() {

@@ -15,26 +15,43 @@
       <input type="file" class="file-input" [accept]="requiredFileType" (change)="onFileSelected($event)" #fileUpload>
       <div class="file-upload">
 
-        {{fileName || "No file uploaded yet."}}
+        {{svgOption.fileName || "No file uploaded yet."}}
 
         <button mat-mini-fab class="upload-btn" (click)="fileUpload.click()">
           <mat-icon>attach_file</mat-icon>
         </button>
       </div>
+      <p class="opt-header">Stroke (Tool Path)</p>
       <div class="options-cont">
-          <mat-checkbox class="checkbox" (change)="invertYChecked($event.checked)">Invert Y</mat-checkbox>
-          <mat-checkbox class="checkbox" (change)="invertXChecked($event.checked)">Invert X</mat-checkbox>
-          <mat-checkbox class="checkbox" (change)="duplicateChecked($event.checked)">Remove Duplicates</mat-checkbox>
+          <mat-checkbox class="checkbox" [(ngModel)]="svgOption.stroke" (change)="strokeChecked($event.checked)">Show</mat-checkbox>
           <mat-form-field appearance="outline" class="tool-input">
             <mat-label>Tool Diameter (inches)</mat-label>
             <input name="toolDiam" type="number" step="0.0005" (change)="updateTool()" [(ngModel)]="toolDiam" matInput placeholder="Tool Diameter (inches)">
           </mat-form-field>
+          <mat-form-field appearance="outline" class="tool-input">
+            <mat-label>Color HEX</mat-label>
+            <input name="strokeColor" type="text" (change)="strokeColorUpdate()" [(ngModel)]="svgOption.strokeColor" matInput placeholder="Color HEX">
+          </mat-form-field>
+      </div>
+      <p class="opt-header">Fill (Product)</p>
+      <div class="options-cont">
+        <mat-checkbox class="checkbox" [(ngModel)]="svgOption.fill" (change)="fillChecked($event.checked)">Show</mat-checkbox>
+        <mat-form-field appearance="outline" class="tool-input">
+          <mat-label>Color HEX</mat-label>
+          <input name="fillColor" type="text" (change)="fillColorUpdate()" [(ngModel)]="svgOption.fillColor" matInput placeholder="Color HEX">
+        </mat-form-field>
+      </div>
+      <p class="opt-header">Orientation & Cleanup</p>
+      <div class="options-cont">
+        <mat-checkbox class="checkbox" [(ngModel)]="invertY" (change)="invertYChecked($event.checked)">Invert Y</mat-checkbox>
+        <mat-checkbox class="checkbox" [(ngModel)]="invertX" (change)="invertXChecked($event.checked)">Invert X</mat-checkbox>
+        <mat-checkbox class="checkbox" [(ngModel)]="duplicates" (change)="duplicateChecked($event.checked)">Remove Duplicates</mat-checkbox>
       </div>
       <div [hidden]="!loading">
         <mat-spinner></mat-spinner>
       </div>
       <div *ngIf="svgReady" [hidden]="loading" class="svg-container">
-        <app-svg [path]="path" [height]="bigY.toString()" [fileName]="fileName" [resetFunc]="reset"></app-svg>
+        <app-svg [option]="svgOption" [resetFunc]="reset"></app-svg>
       </div>
 
       <div [hidden]="!svgReady">
